@@ -1,9 +1,11 @@
 package com.example.serviceweb;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,6 +55,28 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
 
+        });
+        initView();
+        btnPraticien.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String filmIdStr = textViewNom.getText().toString().trim();
+
+                if (filmIdStr.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "Veuillez entrer un numéro de film",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                int filmId = Integer.parseInt(filmIdStr);
+                if (filmId < 1 || filmId > 6) {
+                    Toast.makeText(MainActivity.this, "Numéro de film doit être entre 1 et 6",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                //fetchFilmDetails(filmId);
+            }
         });
     }
 }
