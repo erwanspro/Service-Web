@@ -44,14 +44,14 @@ public class MainActivity extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this);
 
         JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.GET, "https://gsb.siochaptalqper.fr/praticiens/numdep/", null, response -> { }, error -> { }
+                Request.Method.GET, "https://gsb.siochaptalqper.fr/praticiens/", null, response -> { }, error -> { }
         );
 
 
     }
     public TextView fetchNumDep(int numdep){
-        textViewDep.setText("Vous avez choisi le numéro : "+numdep);
-        String url = "https://gsb.siochaptalqper.fr/praticiens/" + numdep + "/";
+        textViewDep.setText("Vous avez choisi le numéro : "+ numdep);
+        String url = "https://gsb.siochaptalqper.fr/praticiens/numdep/" + numdep ;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         btnDepartement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String filmIdStr = textViewDep.getText().toString().trim();
+                String filmIdStr = saisiDepartement.getText().toString().trim();
 
                 if (filmIdStr.isEmpty()) {
                     Toast.makeText(MainActivity.this, "Veuillez entrer un numéro de departement",
@@ -112,12 +112,12 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                int filmId = Integer.parseInt(filmIdStr);
-//                if (filmId < 1 || filmId > 6) {
-//                    Toast.makeText(MainActivity.this, "Numéro de film doit être entre 1 et 6",
+//                if (filmIdStr.Chaine de cara) {
+//                    Toast.makeText(MainActivity.this, "Veuillez entrer un numéro fdp",
 //                            Toast.LENGTH_SHORT).show();
 //                    return;
 //                }
+
 
                 //fetchFilmDetails(filmId);
             }
