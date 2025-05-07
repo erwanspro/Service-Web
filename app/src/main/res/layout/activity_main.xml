@@ -23,20 +23,20 @@
 
     <EditText
         android:id="@+id/saisiPraticien"
-        android:layout_width="148dp"
-        android:layout_height="52dp"
+        android:layout_width="226dp"
+        android:layout_height="62dp"
         android:ems="10"
-        android:hint="Nom du praticien"
+        android:hint="Numéro du département"
         android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.098"
+        app:layout_constraintHorizontal_bias="0.131"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.184" />
+        app:layout_constraintVertical_bias="0.186" />
 
     <Button
-        android:id="@+id/btnPraticien"
+        android:id="@+id/btnDepartement"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Rechercher"
@@ -51,30 +51,30 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Recherche par numéro de département : "
+        android:text="Recherche par nom : "
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.166"
+        app:layout_constraintHorizontal_bias="0.093"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.33" />
+        app:layout_constraintVertical_bias="0.339" />
 
     <EditText
         android:id="@+id/saisiDepartement"
-        android:layout_width="200dp"
-        android:layout_height="53dp"
+        android:layout_width="230dp"
+        android:layout_height="50dp"
         android:ems="10"
-        android:hint="Numéro du département"
+        android:hint="Nom du Praticien"
         android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.123"
+        app:layout_constraintHorizontal_bias="0.132"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.402" />
+        app:layout_constraintVertical_bias="0.4" />
 
     <Button
-        android:id="@+id/btnDepartement"
+        android:id="@+id/btnPraticien"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Rechercher"
@@ -89,10 +89,10 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Recherche par nom : "
+        android:text="Recherche par numéro de département : "
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.093"
+        app:layout_constraintHorizontal_bias="0.166"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.134"
