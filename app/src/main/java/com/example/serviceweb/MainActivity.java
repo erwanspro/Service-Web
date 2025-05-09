@@ -23,6 +23,8 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.UnsupportedCharsetException;
+
 public class MainActivity extends AppCompatActivity {
     private TextView textViewDep;
     private TextView textViewNom;
@@ -42,15 +44,55 @@ public class MainActivity extends AppCompatActivity {
         btnPraticien = findViewById(R.id.btnPraticien);
         btnDepartement = findViewById(R.id.btnDepartement);
         requestQueue = Volley.newRequestQueue(this);
+        btnDepartement.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String departementStr = saisiDepartement.getText().toString().trim();
+                try {
+                    if (departementStr.isEmpty()) {
+                        Toast.makeText(MainActivity.this, "Veuillez entrer un numéro de departement ",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    int numDep = Integer.parseInt(departementStr);
 
-        JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.GET, "https://gsb.siochaptalqper.fr/praticiens/", null, response -> { }, error -> { }
-        );
+                    fetchNumDep(numDep);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(MainActivity.this,"Erreur : Veuillez ne pas entrer une chaine de caractère.",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+//        btnPraticien.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String praticienStr = saisiPraticien.getText().toString().trim();
+//                try{
+//                    if (praticienStr.isEmpty()) {
+//                        Toast.makeText(MainActivity.this, "Veuillez entrer un ou plusieur caractère",
+//                                Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
+//                    String nomPrat = Integer.toString(Integer.parseInt(praticienStr));
+////                    if (nomPrat.contains("01234566789")) {
+////                        Toast.makeText(MainActivity.this, "Veuillez ne pas entrer un nombre",
+////                                Toast.LENGTH_SHORT).show();
+////                        return;
+////                    }
+//                    fetchNomPraticien(nomPrat);
+//                } catch (NullPointerException e) {
+//                    Toast.makeText(MainActivity.this,"Erreur : Veuillez ne pas entrer un nombre.",
+//                            Toast.LENGTH_SHORT).show();
+//                }
 
-
+//            }
+//        });
+//        JsonObjectRequest request = new JsonObjectRequest(
+//                Request.Method.GET, "https://gsb.siochaptalqper.fr/praticiens/", null, response -> { }, error -> { }
+//        );
     }
     public TextView fetchNumDep(int numdep){
-        textViewDep.setText("Vous avez choisi le numéro : "+ numdep);
+//        textViewDep.setText("Vous avez choisi le numéro : " + numdep);
         String url = "https://gsb.siochaptalqper.fr/praticiens/numdep/" + numdep ;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET, url, null,
@@ -58,16 +100,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            // Extraire les données du film
-                            String num = response.getString("PRA_NUM");
+                            // Extraire les données de la tabble
+                            int num = response.getInt("PRA_NUM");
                             String nom = response.getString("PRA_NOM");
                             String prenom =  response.getString("PRA_PRENOM");
                             String add = response.getString("PRA_ADRESSE");
 
-                            int episodeId = response.getInt("episode_id");
-                            // Afficher les détails du film
-                            textViewDep.setText(num+"\n"+"nom : "+nom+"\n"+"prenom : "+prenom+"\n"+"adresse : "+add);
-                            //textViewEpisodeId.setText("Episode n°" +episodeId) ;
+                            textViewDep.setText(num + "\n" + "nom : " + nom + "\n" + "prenom : " + prenom + "\n" + "adresse : " + add);
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(MainActivity.this, "Erreur d'analyse JSON", Toast.LENGTH_SHORT).show();
@@ -88,6 +128,42 @@ public class MainActivity extends AppCompatActivity {
         return textViewDep;
 
     }
+    public TextView fetchNomPraticien(String nomPrat){
+//        textViewNom.setText("Voici les praticiens correspondant a la recherche: "+ nomPrat);
+        String url = "https://gsb.siochaptalqper.fr/praticiens/numdep/" + nomPrat ;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            // Extraire les données de la tabble
+                            int num = response.getInt("PRA_NUM");
+                            String nom = response.getString("PRA_NOM");
+                            String prenom =  response.getString("PRA_PRENOM");
+                            String add = response.getString("PRA_ADRESSE");
+
+                            textViewNom.setText(num+"\n"+"nom : "+nom+"\n"+"prenom : "+prenom+"\n"+"adresse : "+add);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(MainActivity.this, "Erreur d'analyse JSON", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(MainActivity.this, "Erreur: " +
+                                error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+        // Ajouter la requête à la file d'attente
+        requestQueue.add(jsonObjectRequest);
+
+        return textViewNom;
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,26 +177,5 @@ public class MainActivity extends AppCompatActivity {
 
         });
         initView();
-        btnDepartement.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String filmIdStr = saisiDepartement.getText().toString().trim();
-
-                if (filmIdStr.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "Veuillez entrer un numéro de departement",
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-//                if (filmIdStr.Chaine de cara) {
-//                    Toast.makeText(MainActivity.this, "Veuillez entrer un numéro fdp",
-//                            Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-
-
-                //fetchFilmDetails(filmId);
-            }
-        });
     }
 }
