@@ -17,13 +17,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.charset.UnsupportedCharsetException;
 
 public class MainActivity extends AppCompatActivity {
     private TextView textViewDep;
@@ -48,121 +48,119 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String departementStr = saisiDepartement.getText().toString().trim();
+                if (departementStr.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "Veuillez entrer un numéro de département", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 try {
-                    if (departementStr.isEmpty()) {
-                        Toast.makeText(MainActivity.this, "Veuillez entrer un numéro de departement ",
+                    int numDep = Integer.parseInt(departementStr);
+                    if (numDep < 1 || (numDep > 95 && numDep < 971) || numDep > 976) {
+                        Toast.makeText(MainActivity.this, "Numéro de département invalide", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    fetchNumDep(numDep);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(MainActivity.this, "Erreur : Veuillez entrer un nombre valide", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        btnPraticien.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String praticienStr = saisiPraticien.getText().toString().trim();
+                if (praticienStr.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "Veuillez entrer un ou plusieur caractère",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try{
+                    String nomPrat = Integer.toString(Integer.parseInt(praticienStr));
+                    if (nomPrat.contains("01234566789")) {
+                        Toast.makeText(MainActivity.this, "Veuillez ne pas entrer un nombre",
                                 Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    int numDep = Integer.parseInt(departementStr);
-
-                    fetchNumDep(numDep);
-                } catch (NumberFormatException e) {
-                    Toast.makeText(MainActivity.this,"Erreur : Veuillez ne pas entrer une chaine de caractère.",
+                    fetchNomPraticien(nomPrat);
+                } catch (NullPointerException e) {
+                    Toast.makeText(MainActivity.this,"Erreur : Veuillez ne pas entrer un nombre.",
                             Toast.LENGTH_SHORT).show();
                 }
             }
         });
-//        btnPraticien.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String praticienStr = saisiPraticien.getText().toString().trim();
-//                try{
-//                    if (praticienStr.isEmpty()) {
-//                        Toast.makeText(MainActivity.this, "Veuillez entrer un ou plusieur caractère",
-//                                Toast.LENGTH_SHORT).show();
-//                        return;
-//                    }
-//                    String nomPrat = Integer.toString(Integer.parseInt(praticienStr));
-////                    if (nomPrat.contains("01234566789")) {
-////                        Toast.makeText(MainActivity.this, "Veuillez ne pas entrer un nombre",
-////                                Toast.LENGTH_SHORT).show();
-////                        return;
-////                    }
-//                    fetchNomPraticien(nomPrat);
-//                } catch (NullPointerException e) {
-//                    Toast.makeText(MainActivity.this,"Erreur : Veuillez ne pas entrer un nombre.",
-//                            Toast.LENGTH_SHORT).show();
-//                }
 
-//            }
-//        });
-//        JsonObjectRequest request = new JsonObjectRequest(
-//                Request.Method.GET, "https://gsb.siochaptalqper.fr/praticiens/", null, response -> { }, error -> { }
-//        );
     }
     public TextView fetchNumDep(int numdep){
-//        textViewDep.setText("Vous avez choisi le numéro : " + numdep);
         String url = "https://gsb.siochaptalqper.fr/praticiens/numdep/" + numdep ;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
                 Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            // Extraire les données de la tabble
-                            int num = response.getInt("PRA_NUM");
-                            String nom = response.getString("PRA_NOM");
-                            String prenom =  response.getString("PRA_PRENOM");
-                            String add = response.getString("PRA_ADRESSE");
-
-                            textViewDep.setText(num + "\n" + "nom : " + nom + "\n" + "prenom : " + prenom + "\n" + "adresse : " + add);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(MainActivity.this, "Erreur d'analyse JSON", Toast.LENGTH_SHORT).show();
+                    public void onResponse(JSONArray response) {
+                        for (int i = 0; i < response.length(); i++) {
+                            try {
+                                JSONObject jsonObject = response.getJSONObject(i);
+                                String num = jsonObject.optString("PRA_NUM", "Inconnu");
+                                String nom = jsonObject.optString("PRA_NOM", "Inconnu");
+                                String prenom = jsonObject.optString("PRA_PRENOM", "Inconnu");
+                                String add = jsonObject.optString("PRA_ADRESSE", "Inconnue");
+                                String cp = jsonObject.optString("PRA_CP", "Inconnue");
+                                String ville = jsonObject.optString("PRA_VILLE", "Inconnue");
+                                String libelle = jsonObject.optString("TYP_LIBELLE", "Inconnue");
+                                String notoriete = jsonObject.optString("PRA_COEFNOTORIETE", "Inconnue");
+                                textViewDep.append("\n" + "Numéro : " + num + "\n" + "Nom : " + nom + "\n" + "Prénom : " + prenom + "\n" + "Adresse : " + add + "\n" + "Code postal : " + cp+ "\n" + "Ville : " + ville + "\n" + "Libelle :" + libelle + "\n" + "Notoriété : " + notoriete + "\n");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                Toast.makeText(MainActivity.this, "Erreur d'analyse JSON", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MainActivity.this, "Erreur: " +
-                                error.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Erreur: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
         );
-        // Ajouter la requête à la file d'attente
-        requestQueue.add(jsonObjectRequest);
-
+        requestQueue.add(jsonArrayRequest);
         return textViewDep;
-
     }
     public TextView fetchNomPraticien(String nomPrat){
-//        textViewNom.setText("Voici les praticiens correspondant a la recherche: "+ nomPrat);
-        String url = "https://gsb.siochaptalqper.fr/praticiens/numdep/" + nomPrat ;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+        String url = "https://gsb.siochaptalqper.fr/praticiens/nom/" + nomPrat ;
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
                 Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            // Extraire les données de la tabble
-                            int num = response.getInt("PRA_NUM");
-                            String nom = response.getString("PRA_NOM");
-                            String prenom =  response.getString("PRA_PRENOM");
-                            String add = response.getString("PRA_ADRESSE");
-
-                            textViewNom.setText(num+"\n"+"nom : "+nom+"\n"+"prenom : "+prenom+"\n"+"adresse : "+add);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(MainActivity.this, "Erreur d'analyse JSON", Toast.LENGTH_SHORT).show();
+                    public void onResponse(JSONArray response) {
+                        for (int i = 0; i < response.length(); i++) {
+                            try {
+                                JSONObject jsonObject = response.getJSONObject(i);
+                                String num = jsonObject.optString("PRA_NUM", "Inconnu");
+                                String nom = jsonObject.optString("PRA_NOM", "Inconnu");
+                                String prenom = jsonObject.optString("PRA_PRENOM", "Inconnu");
+                                String add = jsonObject.optString("PRA_ADRESSE", "Inconnue");
+                                String cp = jsonObject.optString("PRA_CP", "Inconnue");
+                                String ville = jsonObject.optString("PRA_VILLE", "Inconnue");
+                                String libelle = jsonObject.optString("TYP_LIBELLE", "Inconnue");
+                                String notoriete = jsonObject.optString("PRA_COEFNOTORIETE", "Inconnue");
+                                textViewNom.append("\n" + "Numéro : " + num + "\n" + "Nom : " + nom + "\n" + "Prénom : " + prenom + "\n" + "Adresse : " + add + "\n" + "Code postal : " + cp+ "\n" + "Ville : " + ville + "\n" + "Libelle :" + libelle + "\n" + "Notoriété : " + notoriete + "\n");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                Toast.makeText(MainActivity.this, "Erreur d'analyse JSON", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MainActivity.this, "Erreur: " +
-                                error.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Erreur: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
         );
-        // Ajouter la requête à la file d'attente
-        requestQueue.add(jsonObjectRequest);
-
+        requestQueue.add(jsonArrayRequest);
         return textViewNom;
-
     }
 
     @Override
